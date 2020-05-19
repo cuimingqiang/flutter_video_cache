@@ -8,6 +8,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import com.danikula.videocache.HttpProxyCacheServer
+import java.lang.Exception
+
 /** VideoCachePlugin */
 public class VideoCachePlugin : FlutterPlugin, MethodCallHandler {
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -19,7 +21,7 @@ public class VideoCachePlugin : FlutterPlugin, MethodCallHandler {
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "videoCache")
         channel.setMethodCallHandler(this);
-        proxy = HttpProxyCacheServer( flutterPluginBinding.applicationContext)
+        proxy = HttpProxyCacheServer(flutterPluginBinding.applicationContext)
 
     }
 
@@ -45,20 +47,26 @@ public class VideoCachePlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         if (call.method == "getPlatformVersion") {
             result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        } else if(call.method == "cacheUrl"){
-            var map = call.arguments as Map<String,String>
-            result.success(proxy?.getProxyUrl(map["url"]))
-        }else if(call.method == "total"){
-            
-        }else if(call.method == "clear"){
+        } else if (call.method == "cacheUrl") {
+            var map = call.arguments as Map<String, String>
+            try {
+                var proxyUrl = proxy?.getProxyUrl(map["url"])
+                result.success(proxyUrl)
+            } catch (e: Exception) {
+                result.error("-1", e.message, e)
+            }
 
-        }else {
+        } else if (call.method == "total") {
+            result.success(0)
+        } else if (call.method == "clear") {
+
+        } else {
             result.notImplemented()
         }
     }
 
     private fun cacheUrl(url: String): String {
-        return  ""
+        return ""
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

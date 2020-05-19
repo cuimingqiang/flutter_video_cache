@@ -15,4 +15,13 @@ class VideoCache {
         await _channel.invokeMethod("cacheUrl", <String, String>{"url": url});
     return cache;
   }
+
+  static Future<int> total() async {
+    final int total = await _channel.invokeMethod("total");
+    return total;
+  }
+
+  static Future clear() async {
+    await _channel.invokeMethod("clear");
+  }
 }

@@ -39,8 +39,11 @@ static FlutterMethodChannel* channel;
     if([@"cacheUrl" isEqualToString:call.method]){
         NSString* url =  (NSString*)call.arguments[@"url"];
         NSURL *proxyURL = [KTVHTTPCache proxyURLWithOriginalURL:[NSURL URLWithString:url]];
-        
         result([proxyURL absoluteString]);
+    }else if([@"total" isEqualToString:call.method]){
+        result([NSNumber numberWithLong:[KTVHTTPCache cacheTotalCacheLength]]);
+    }else if([@"clear" isEqualToString:call.method]){
+        [KTVHTTPCache cacheDeleteAllCaches];
     }else{
         result([[UIDevice currentDevice]systemName]);
     }
